@@ -1,0 +1,98 @@
+%% Gerhardt Academic Template Set — Paper starter (simplified).
+%%
+%% Source: https://github.com/HolgerGerhardt/TeXTemplates (Template_Paper.tex)
+%% Licence: 0BSD ("Permission to use, copy, modify, and/or distribute this
+%% software for any purpose with or without fee is hereby granted"),
+%% verified directly in the repo's own LICENSE file. Holger Gerhardt (repo
+%% owner) as holder.
+%%
+%% This is a MULTI-TEMPLATE repo (CV, dissertation, paper, poster, and five
+%% presentation variants), each also split across ~12 shared \input{}
+%% preamble fragments under 0_0_Preamble/. Per this catalogue's own
+%% multi-template-collection policy, only the "Paper" template is packaged
+%% here (matching this batch's "articles" ask) -- not the whole repo.
+%%
+%% RESTORED: upstream's Preamble_BibLaTeX_AER.tex uses biblatex-chicago with
+%% backend=biber. An earlier version of this starter fell back to plain
+%% natbib+bibtex because the compile pipeline only ran classic bibtex. The
+%% pipeline now runs biber when a document's main.bcf is present, so this
+%% ships biblatex-chicago (chicago-authordate style) as upstream intended.
+%% Upstream's own ~10 \DeclareSourcemap regex passes exist to normalise
+%% messy imported .bib data (e.g. Zotero/EndNote export quirks) and are not
+%% needed for a clean, hand-written starter .bib -- omitted here rather than
+%% carried over as inert complexity.
+\documentclass[a4paper, 10pt]{article}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[american]{babel}
+
+% Fira Sans for headings, Charter (XCharter + mathdesign) for body/math --
+% the template's real font pairing, both available in this pinned image.
+\usepackage[lining, scale=0.88]{FiraMono}
+\usepackage[book, semibold, lining, tabular, scale=0.88]{FiraSans}[2018/05/23]
+\usepackage{amsmath}
+\usepackage[charter, sfscaled=false, ttscaled=false, euro=false]{mathdesign}
+\usepackage[scaled=0.96, lining]{XCharter}
+%% Upstream vendors its own fork of mweights.tex (line-for-line CTAN
+%% mweights code) inside 0_0_Preamble/; the CTAN package itself ships in
+%% this pinned image, so this starter just \usepackage's it directly.
+\usepackage{mweights}
+
+\usepackage[sf, bf, raggedright, explicit]{titlesec}
+\usepackage[style]{abstract}
+\renewcommand{\abstractnamefont}{\small\sffamily\bfseries\upshape}
+\setlength{\absleftindent}{\parindent}
+\setlength{\absrightindent}{\parindent}
+\usepackage[max6]{authblk}
+
+\usepackage[style=chicago-authordate, backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref}
+
+\newcommand{\papertitle}{Boosting and Additive Models}
+
+\title{\papertitle}
+\author{
+    Marco Colangelo$^1$ \\
+    \normalsize $^1$Department of Computer Science, University of Milan, Milan, Italy \\
+    \normalsize \textit{Corresponding author:} marco.colangelo@studenti.unimi.it
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    !!!!!!
+\end{abstract}
+
+\section{Introduction}
+\subsection{From a single predictor to an ensemble}
+Supervised learning algorithms map an annotated training set to a predictor $ f: X \to Y$, and the empirical risk minimization (ERM) selects, within a fixed hypotesis class, the predictor with smallest training error. The statistical analysis of ERM makes the tension inherent in this choice explicitly: for a finite class $ \mathcal{H} $, the estimation error of the minimizer is controlled by a term of order $\sqrt{\ln|\mathcal{H}| / m}$, so shrinking $ \mathcal{H} $ improves the control on the variance but may increase the approximation error, and enlarging it does the opposite. A predictor is thus always a compromise struck once, before seeing how it fails.
+
+Ensemble methods sidestep this farming. Rather than searching harder within a class, they combine many predictors from a deliberately impoverished class into a single, more expressive one. The simplest istance is the majority classifier $ f(x) = \mathrm{sgn}\big(\sum_{t=1}^T h_t(x)\big)$: if the base classifiers made \emph{independent} mistakes with respect to the uniform distribution over the training set, a Chernoff-Hoeffding argument shows that the training error of $f$ decays as $e^{-2T\gamma^2}$, where $\gamma$ measures how much better than random guessing $h_t$ is. Independence, however, is a strong and largely unverifiable assumption. Bagging attempts to approximate it by resampling; the contribution of boosting is to obtain the same exponential decay \emph{without} requiring it.
+
+\subsection{Boosting and Additive models}
+Boosting builds an ensemble incrementally. At each round it presents the base learner with a reweighted version of the training set, concentrating probability mass on the examples that the current ensemble finds hard, and appends the resulting base classifier to a weighted sum
+\begin{equation}\label{eq:additive}
+    f = \sum_{t=1}^T w_t\, h_t, \qquad 
+    %\text{final predictor } \ \mathrm{sgn}(f) .
+\end{equation}
+Equation~\eqref{eq:additive} is the reaon the two halves of this poject's title belong together: AdaBoost is not only a device for amplifying weak learners, it is also a procedure that fits an \emph{additive model} in a dictionary of simple functions, one term at time, never revisiting the coefficients already chosen. This second reading, made explicit by Friedman, Hastie and Tibshirani, is what connects boosting to surrogate losses: the coefficients $w_t$ are exactly those that greedily minimise an exponential upper bound on the zero-one loss.
+
+\section{Method}
+\label{sec:method}
+
+\section{Results}
+\label{sec:results}
+
+\section{Conclusion}
+
+\printbibliography
+
+\end{document}

@@ -15,5 +15,8 @@ report/*.log
 report/*.out
 report/*.synctex.gz
 report/*.toc
+report/*.run.xml
+report/*.bcf
+report/*.md
 
 .DS_Store

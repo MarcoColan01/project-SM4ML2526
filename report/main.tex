@@ -85,8 +85,19 @@ Boosting builds an ensemble incrementally. At each round it presents the base le
 \end{equation}
 Equation~\eqref{eq:additive} is the reaon the two halves of this poject's title belong together: AdaBoost is not only a device for amplifying weak learners, it is also a procedure that fits an \emph{additive model} in a dictionary of simple functions, one term at time, never revisiting the coefficients already chosen. This second reading, made explicit by Friedman, Hastie and Tibshirani, is what connects boosting to surrogate losses: the coefficients $w_t$ are exactly those that greedily minimise an exponential upper bound on the zero-one loss.
 
-\section{Method}
-\label{sec:method}
+\subsection{Objectives of the study}
+The aim of this work is to implement AdaBoost with decision stumps from scratch and to study empirically what its theoretical guarantees do and do not predict. 
+\begin{enumerate}
+    \item \textbf{How tight is the training-error bound?} The exponential bound $\prod_t \sqrt{4\varepsilon_t(1-\varepsilon_t)}$ is a worst-case guarantee. We track it round by round against the observed training error.
+    \item \textbf{How does the weak learning assumption degrade?} The bound is driven by the edges $\gamma_t = \tfrac12 - \varepsilon_t$, and there is no reason for these to stay bounded away from zero as boosting procedes. We measure their decay directly.
+    \item \textbf{What happens to the test error once the training error is zero?} Classical model-selection reasoning predicts overfitting as $T$ grows; the boosting literature repeadetly reports the .... opposite. We examine both regimes.
+    \item \textbf{How does label noise change the picture?} The exponential loss grows without bound on misclassified point, which suggests that corrupted labels shoudl attract a disproportionate share of the distribution. This intuition is made precise by the negative result of Long and Servedio ....; we test it with a controlled flip rate on labels.
+\end{enumerate}
+
+The comparison against a single decision tree and logistic regression, required by the assignment, is used to place these observations in context rather than as an end in itself: the interesting outcome is not which algorithm wins, but on \emph{which} dataset each of them wins and why.
+
+\section{Theoretical Framework}\label{sec:theory}
+
 
 \section{Results}
 \label{sec:results}

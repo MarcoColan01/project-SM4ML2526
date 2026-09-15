@@ -19,7 +19,8 @@ K_FOLDS = 5
 N_SYNTH = 1250
 ETA = 0.10
 THETA = np.deg2rad(30)
-RADIUS = np.sqrt(2 / np.pi)
+R_IN, R_OUT = 0.5, 1.0
+SIGMA = 0.15
 
 T_MAX = 500
 TOL = 1e-10

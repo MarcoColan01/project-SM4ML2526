@@ -4,7 +4,7 @@ from functools import lru_cache
 
 import numpy as np 
 from sklearn.model_selection import train_test_split
-from .config import DATA_DIR, SEED, TEST_SIZE, K_FOLDS, N_SYNTH, ETA, THETA, RADIUS
+from .config import DATA_DIR, SEED, TEST_SIZE, K_FOLDS, N_SYNTH, THETA, ETA, R_IN, R_OUT, SIGMA
 
 
 
@@ -23,25 +23,37 @@ def load_spambase(log=True):
 
 def boundary_score(X, kind):
     if kind == "oblique":
-        return X[:,1] - np.tan(THETA) * X[:,0]
-    if kind == "circles":
-        return RADIUS**2 - np.sum(X**2, axis=1)
+        return X[:, 1] * np.cos(THETA) - X[:, 0] * np.sin(THETA)
+    if kind == "circles":       
+        rho = np.linalg.norm(X, axis=1)
+        return ((R_OUT**2 - R_IN**2) / (2 * SIGMA**2)
+                + np.log(np.i0(R_IN * rho / SIGMA**2)) - np.log(np.i0(R_OUT * rho / SIGMA**2)))
     raise ValueError(f"unknown dataset: {kind}")
 
-def make_synthetic(kind, n = N_SYNTH, eta=ETA, seed=SEED):
+def make_synthetic(kind, n=N_SYNTH, eta=ETA, seed=SEED):
     rng = np.random.default_rng([seed, 0])
-    X = rng.uniform(-1,1,size=(n,2))
-    y_clean= np.where(boundary_score(X, kind) > 0, 1, -1)
-    y = np.where(rng.random(n) < eta, -y_clean, y_clean)
-    return X, y, y_clean
+    flip = rng.random(n) < eta                  
+    if kind == "oblique":                       
+        X = rng.standard_normal((n, 2))
+        w = np.array([-np.sin(THETA), np.cos(THETA)])
+        y_clean = np.where(X @ w > 0, 1, -1)
+    elif kind == "circles":                     
+        y_clean = np.where(rng.random(n) < 0.5, 1, -1)
+        angle = rng.uniform(0, 2 * np.pi, n)
+        radius = np.where(y_clean == 1, R_IN, R_OUT)
+        X = radius[:, None] * np.c_[np.cos(angle), np.sin(angle)] + SIGMA * rng.standard_normal((n, 2))
+    else:
+        raise ValueError(f"unknown dataset: {kind}")
+    return X, np.where(flip, -y_clean, y_clean), y_clean
 
-def load_synthetic(kind, n = N_SYNTH, eta=ETA, seed=SEED):
+def load_synthetic(kind, n=N_SYNTH, eta=ETA, seed=SEED):
     path = DATA_DIR / f"{kind}_n{n}_eta{eta:.2f}_seed{seed}.npz"
     if not path.exists():
         X, y, y_clean = make_synthetic(kind, n, eta, seed)
         np.savez(path, X=X, y=y, y_clean=y_clean)
     d = np.load(path)
     return d["X"], d["y"], d["y_clean"]
+
 
 def get_split(name, seed=SEED):
     if name == "spambase":

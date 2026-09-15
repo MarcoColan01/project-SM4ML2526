@@ -2,27 +2,28 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA_RAW = ROOT / "data" / "raw"
+DATA_DIR = ROOT / "data"
 RESULTS_DIR = ROOT / "results"
-FIGURES_DIR = ROOT / "report" / "Figures"
+FIG_DIR = ROOT / "report" / "Figures"
 
-for _d in (DATA_RAW, RESULTS_DIR, FIGURES_DIR):
-    _d.mkdir(parents=True, exist_ok=True)
+for dir in (DATA_DIR, RESULTS_DIR, FIG_DIR):
+    dir.mkdir(parents=True, exist_ok=True)
 
-SEED = 20252026
+SEEDS = list(range(10))
+SEED = SEEDS[0]
 
-def seeds(n, base=SEED):
-    return np.random.SeedSequence(base).generate_state(n)
+DATASETS = ("spambase", "oblique", "circles")
+TEST_SIZE = 0.2
+K_FOLDS = 5
 
-MOONS = dict(sigma=0.05, m_train=2000, m_test=10_000)
-DIAGONAL = dict(gamma=0.12, m_train=2000, m_test=10_000)
-ETAS = (0.0, 0.05, 0.10, 0.20)
-N_REPS = 10
+N_SYNTH = 1250
+ETA = 0.10
+THETA = np.deg2rad(30)
+RADIUS = np.sqrt(2 / np.pi)
 
-SPAMBASE_SHAPE = (4601, 57)
-N_FOLDS = 5 
+T_MAX = 500
+TOL = 1e-10
 
-T_MAX = 1000
-
-DT_DEPTHS = tuple(range(1,16))
-LR_CS = tuple(10.0 ** np.linspace(-3.0, 3.0, 13))
+TREE_GRID = {"max_depth": [2,3,4,5,6,8,10,15,None],
+             "min_samples_leaf": [1,5,10,20]}
+LR_GRID = {"C": [10.0**p for p in range(-3,4)]}

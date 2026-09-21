@@ -16,7 +16,7 @@ def presort(X):
 def best_stump(Xs, order, valid, p, y):
     C = np.cumsum((p*y)[order], axis=0)
     err_pos = p[y==-1].sum() + np.vstack([np.zeros(Xs.shape[1]), C[:-1]])
-    gain = np.where(valid, np.abs(err_pos -0.5), 1.0)
+    gain = np.where(valid, np.abs(err_pos -0.5), -1.0)
     k,j = np.unravel_index(np.argmax(gain), gain.shape)
     tau = -np.inf if k == 0 else (Xs[k-1,j] + Xs[k,j]) /2
     s = 1 if err_pos[k,j] <= 0.5 else -1

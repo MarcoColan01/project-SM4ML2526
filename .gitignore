@@ -18,5 +18,8 @@ report/*.toc
 report/*.run.xml
 report/*.bcf
 report/*.md
+report/Figures/
 
 .DS_Store
+
+results/

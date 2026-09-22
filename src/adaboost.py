@@ -58,3 +58,14 @@ def staged_errors(model, X, y, T=None):
 
 def predict(model, X, T=None):
     return sgn(staged_scores(model, X)[(T or len(model["alpha"])) -1])
+
+def score(model, X, T=None):
+    T = T or len(model["alpha"])
+    return sum(a * stump_predict(X, j, tau, s) for j, tau, s, a in
+               zip(model["feature"][:T], model["threshold"][:T], model["polarity"][:T], model["alpha"][:T]))
+
+def predict(model, X, T=None):
+    return sgn(score(model, X, T))
+
+def truncate(model, T):
+    return {k: v[:T] for k,v in model.items() if k != "weights"}

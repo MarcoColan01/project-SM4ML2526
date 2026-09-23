@@ -33,10 +33,11 @@ def boundary_score(X, kind):
 def make_synthetic(kind, n=N_SYNTH, eta=ETA, seed=SEED):
     rng = np.random.default_rng([seed, 0])
     flip = rng.random(n) < eta                  
-    if kind == "oblique":                       
+    if kind in ("oblique", "xor"):             
         X = rng.standard_normal((n, 2))
         w = np.array([-np.sin(THETA), np.cos(THETA)])
-        y_clean = np.where(X @ w > 0, 1, -1)
+        rule = X @ w > 0 if kind == "oblique" else X[:, 0] * X[:, 1] > 0
+        y_clean = np.where(rule, 1, -1)
     elif kind == "circles":                     
         y_clean = np.where(rng.random(n) < 0.5, 1, -1)
         angle = rng.uniform(0, 2 * np.pi, n)

@@ -16,3 +16,6 @@ def additive_component(model, j, grid):
     m = model["feature"] == j
     return np.sum(model["alpha"][m, None] * model["polarity"][m, None]
                   * np.where(grid - model["threshold"][m, None] > 0, 1, -1), axis=0)
+
+def hoeffding(n, delta=0.05):
+    return np.sqrt(np.log(2/delta) / (2*n))

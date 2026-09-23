@@ -42,3 +42,16 @@ def tune(split, seed=SEED):
     tree, tree_res = cv_grid(make_tree, TREE_GRID, X, y, folds)
     logregr, logregr_res = cv_grid(make_logregr, LR_GRID, X, y, folds, scale=True)
     return dict(T=T_star, tree=tree, lr=logregr), dict(adaboost=ada_curves, tree=tree_res, lr=logregr_res)
+
+def fit_final(split, params):
+    X,y = split["X_train"], split["y_train"]
+    mu, sd = X.mean(axis=0), X.std(axis=0)
+    sd[sd==0] = 1.0
+    ada = adaboost.fit(X,y, params["T"])
+    tree = make_tree(**params["tree"]).fit(X,y)
+    logregr = make_logregr(**params["lr"]).fit((X-mu)/sd, y)
+
+    return {"stump": lambda Z: adaboost.predict(ada,Z,1),
+            "adaboost": lambda Z: adaboost.predict(ada,Z),
+            "tree": tree.predict,
+             "lr": lambda Z: logregr.predict((Z-mu) / sd)}, ada

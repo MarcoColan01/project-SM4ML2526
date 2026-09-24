@@ -31,6 +31,6 @@ LR_GRID = {"C": [10.0**p for p in range(-3,4)]}
 
 NAMES = {"spambase": "Spambase", "oblique": "Oblique", "circles": "Circles", "xor": "XOR"}
 MODEL_NAMES = {"adaboost": "AdaBoost", "tree": "Decision tree", "lr": "Logistic regression"}
-LIM = {"oblique": 3.0, "circles": 1.7, "xor": 3.0}
+LIM = {"oblique": 3.0, "circles": 1.7, "xor": 1.0}
 CLASS_STYLE = {1: dict(c="tab:blue", marker="o", label="$y = +1$"),
                -1: dict(c="tab:orange", marker="x", label="$y = -1$")}
